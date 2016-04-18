@@ -198,19 +198,28 @@ def sort_by_word_length(words):
     word_length = []
 
     for i in range(len(words)):
-        length = (len(words[i]),[])
 
-        if length not in word_length: 
-            word_length.append(length)
-        else: 
+        length = (len(words[i]), [words[i]])
+
+        if length in word_length: 
             pass
+        else: 
+            word_length.append(length)
 
-        for j in range(len(word_length) - 1): 
+        for j in range(1, len(word_length)): 
 
-            if len(words[j]) == word_length[j][j]:
-                length = (len(words[j]), [words[j]])
+            if i + j < len(words):
 
-    return word_length
+                if len(words[i + j]) == len(words[i]):
+                    #If the length at word index [i] = to the length at word index [i+j], add the word
+                    word_length.append(words[i + j])
+                else:
+                    pass 
+
+    sorted_word_length = sorted(word_length)
+    return sorted_word_length
+
+    #Able to append words but unable to append a word onto an existing length
 
 
 def get_sum_zero_pairs(numbers):
@@ -242,22 +251,26 @@ def get_sum_zero_pairs(numbers):
 
     pairs = []
 
-    #length of list is 5 so range gives [0,1,2,3,4]
     for i in range(len(numbers)): 
-
+        #If number at any index is 0, append the number in the list
         if numbers[i] == 0:
             pairs.append((numbers[i],0))
-        
+
+        #Iterate through numbers after the current index[i]
         for j in range(i+1, len(numbers)): 
 
+            #If the sum of number at index[i] and index[j] = 0, add the pair as a tuple to the list
             if numbers[i] + numbers[j] == 0: 
                 pair = (numbers[i], numbers[j])
                 pairs.append(pair)
+ 
+    no_duplicate_pairs = set(pairs)
 
-    #Unable to get rid of duplicates that are combos (1,-1) and (-1,1)
-    pairs_set = set(pairs) 
-    
-    return pairs_set
+    #Unable to get rid of pairs that are the reverse of each other (1,-1) and (-1,1) 
+    pairs = list(no_duplicate_pairs)
+    pairs = sorted(pairs)    
+
+    return pairs
 
 
 def kids_game(names):
@@ -297,8 +310,46 @@ def kids_game(names):
     a dictionary (with the super-fast lookup they provide) can help;
     good solutions here will definitely require a dictionary.
     """
+    word_chain = [] 
 
-    return []
+    first_word = names[0]
+    word_chain.append(first_word)
+
+    words = {}
+  
+    #Create dictionary of words mapped to the word's first letter
+    for i in range(len(names)):
+        
+        letter = names[i][0]
+
+        words[letter] = words.get(letter, [])
+
+        if names[i][0] == letter:
+            words[letter].append(names[i])
+
+    for i in range(len(names)):
+        #Take last letter of first word to find next word 
+
+        key = tuple(words.keys())
+
+        #If the last letter at word_chain[index] is in the keys of the words dictionary
+        #Append the first word in the values list for that key
+        if word_chain[i][-1] in key: 
+            key = word_chain[i][-1]
+
+            first_word_value = words[key][0]
+
+            #If word is already in the word chain and the length of the value list at that key is more than 1
+            if first_word_value in word_chain and len(words[key]) > 1:
+                next_word = words[key][1]
+                word_chain.append(next_word)
+            else:
+                word_chain.append(first_word_value)
+
+            #Seeing 'yamask', 'kalob', and 'baltoy' pop up again 
+        i = i+1  
+
+    return word_chain
 
 
 #####################################################################
